@@ -211,7 +211,11 @@ angular.module('ui.bootstrap.tabs', [])
         scope.$watch('active', function(active) {
           // Note this watcher also initializes and assigns scope.active to the
           // attrs.active expression.
-          setActive(scope.$parent, active);
+          if (setActive) {
+            // only call setActive if it is defined (it can be undefined if active is an inline expression)
+            setActive(scope.$parent, active);
+          }
+          
           if (active) {
             tabsetCtrl.select(scope);
           }

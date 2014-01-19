@@ -101,6 +101,50 @@ describe('tabs', function() {
     });
   });
 
+  
+  describe('basics with expression for active attribute', function() {
+
+    beforeEach(inject(function($compile, $rootScope) {
+      scope = $rootScope.$new();
+      scope.first = '1';
+      scope.second = '2';
+      scope.activeTab = '1';
+      scope.selectTab = function(tabName) {
+        scope.activeTab = tabName;
+      };
+      elm = $compile([
+        '<div>',
+        '  <tabset class="hello" data-pizza="pepperoni">',
+        '    <tab heading="First Tab {{first}}" active="activeTab == \'1\'" select="selectFirst(first)">',
+        '      first content is {{first}}',
+        '    </tab>',
+        '    <tab active="activeTab == \'2\'" select="selectTab(second)">',
+        '      <tab-heading><b>Second</b> Tab {{second}}</tab-heading>',
+        '      second content is {{second}}',
+        '    </tab>',
+        '  </tabset>',
+        '</div>'
+      ].join('\n'))(scope);
+      scope.$apply();
+      return elm;
+    }));
+
+    it('should bind tabs content and set first tab active', function() {
+      expectContents(['first content is 1', 'second content is 2']);
+      expect(titles().eq(0)).toHaveClass('active');
+      expect(titles().eq(1)).not.toHaveClass('active');
+      expect(scope.activeTab).toBe('1');
+    });
+
+    it('should change active on click', function() {
+      titles().eq(1).find('a').click();
+      expect(contents().eq(1)).toHaveClass('active');
+      expect(titles().eq(0)).not.toHaveClass('active');
+      expect(titles().eq(1)).toHaveClass('active');
+      expect(scope.activeTab).toBe('2');
+    });
+  });
+
   describe('basics with initial active tab', function() {
 
     beforeEach(inject(function($compile, $rootScope) {
